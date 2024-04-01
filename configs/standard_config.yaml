@@ -1,0 +1,10 @@
+epochs: 100
+train_batch_size: 32
+val_batch_size: 32
+patience: 10
+learning_rate: 0.001
+# Note: test_size is the fraction of val_size
+val_size: 0.2 
+test_size: 0.5
+# Use a subset of the dataset
+debug: True 
