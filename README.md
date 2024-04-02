@@ -15,9 +15,9 @@ The model is then used as part of the fitness function in a genetic algorithm to
 The trials in the video were all consecutive.  AI had no exposure to these two maps, only trained on data from Monkey Meadows. Videos are sped up with a mod.
 
 ## Showcase
-Logs CHIMPS: [video link](https://drive.google.com/file/d/1EYaZ9eAFWIfQvbG2r0IfPCyWt5GWOMsr/preview)
+Logs CHIMPS: [video link](https://drive.google.com/file/d/1xZ18cwrkkEFdrp4685lbqwXCJ6IVqebh/view?usp=sharing)
 
-Cubism CHIMPS: [video link](https://drive.google.com/file/d/1EYaZ9eAFWIfQvbG2r0IfPCyWt5GWOMsr/preview)
+Cubism CHIMPS: [video link](https://drive.google.com/file/d/1EYaZ9eAFWIfQvbG2r0IfPCyWt5GWOMsr/view?usp=sharing)
 
 For more info: [link](https://docs.google.com/document/d/1DWpxrY18FoTPl9ssHeJAfvOj747R3fHAzM5F-R7x3nQ/edit?usp=sharing)
 
