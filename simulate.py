@@ -4,12 +4,11 @@ import logging
 import argparse
 from pathlib import Path
 
-import pandas as pd
 from tqdm.notebook import tqdm
 import tensorflow as tf
-from tensorflow import keras
 import numpy as np
 import onnxruntime as ort
+from model.model import create_model
 
 from utils.data_preparation import *
 from utils.tower_encodings import (
@@ -28,10 +27,17 @@ standard_data_path = Path('./configs/standard_config.yaml')
 model_path = Path('./checkpoints/standard_config_checkpoint.onnx')
 
 def predict(fnn_model, otherInputs, towerInputs):
-    result = fnn_model.run(None, {
-      'Other': np.reshape(otherInputs,(1,46)), 
-      'Towers':np.reshape(towerInputs,(1,12,81))})
-    return result[0]
+    # Check if onnx or keras model
+    if isinstance(fnn_model, ort.InferenceSession):
+        result = fnn_model.run(None, {
+        'Other': np.reshape(otherInputs,(1,46)), 
+        'Towers':np.reshape(towerInputs,(1,12,81))})[0]
+    else:
+        result = fnn_model(
+        (np.reshape(otherInputs,(1,46)),
+            np.reshape(towerInputs,(1,12,81))))
+    
+    return result
 
 def fitness_function(tower_comp, round_num, tower_encodings, goal, model, bloons_per_round):
   """Calculates fitness of a 12 set tower combination.
@@ -170,7 +176,6 @@ def generate_tower_combination(
        fnn_model, 
        np.array(bloons_per_round[current_round_temp]).astype(np.float32),
        np.array(tower_encoding_list).astype(np.float32))
-    logging.info(f'Probability of Beating Round: {win_odds[0][0]}')
     if win_odds>0.7:
       logging.info(f'Round: {current_round_temp} Win Odds: {win_odds[0][0]*100:.2f}%')
       logging.info("Towers: " +','.join(tower_names))
@@ -192,7 +197,8 @@ def get_args():
        '--model_path', 
        '-MODEL', type=str, 
        default=model_path, 
-       help='model path')
+       help='onnx model or model weights path')
+
     
     parser.add_argument('--num_iteration', '-I', type=int, default=25, help='number of iterations for GA')
     parser.add_argument('--population_size', '-P', type=int, default=50, help='population size for GA')
@@ -211,13 +217,24 @@ if __name__ == '__main__':
     all_tower_encoding = create_tower_encoding(possible_placements,map_points)
 
     np.random.seed(1)
-    fnn_model = ort.InferenceSession(args.model_path)
+
+    try:
+        fnn_model = ort.InferenceSession(args.model_path)
+    except Exception:
+        try:
+            fnn_model = create_model(compile=False)
+            fnn_model.load_weights(args.model_path)
+        except Exception:
+            print("Model unable to be loaded")
 
     # Stores the tower combinations in json
     building_plan = []
 
     # CHIMPS starts on round 6
     i = 5
+    # We start wtih 0 towers, -1 means no tower
+    previous_towers = [-1]*12
+
     max_num_iteration = args.num_iteration
     population_size = args.population_size
 
@@ -236,7 +253,7 @@ if __name__ == '__main__':
         tower_combo, round_it_lasts, tower_json = generate_tower_combination(
             fnn_model=fnn_model,
             current_round=i, 
-            previous_towers=[-1]*12, 
+            previous_towers=previous_towers, 
             algorithm_param=algorithm_param, 
             goal = [], 
             bloons_per_round=bloons_per_round, 

@@ -1,7 +1,6 @@
 # Class to represent each tower's range on a map.
 
 import numpy as np
-import pandas as pd
 
 class Point:
   def __init__(self, x, y):

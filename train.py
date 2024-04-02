@@ -1,5 +1,3 @@
-import json
-import math
 import os
 import logging
 import argparse
@@ -10,6 +8,7 @@ import pandas as pd
 from tqdm.notebook import tqdm
 import tensorflow as tf
 import numpy as np
+import keras
 
 from utils.data_preparation import *
 from utils.data_loading import Batch_Generator
@@ -56,16 +55,17 @@ def train_model(
     ''')
 
     # Keras Training
-    early_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=patience, restore_best_weights=True)
+    early_callback = keras.callbacks.EarlyStopping(monitor='val_loss',patience=patience, restore_best_weights=True)
     history = model.fit(train_loader, epochs=epochs, validation_data=(val_loader), callbacks=[early_callback])
     
     logging.info('Evaluating on test set...')
     model.evaluate(test_loader)
 
-    # Save model checkpoint
+    # Save weights of model
     Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
-    tf.keras.models.save_model(model, dir_checkpoint / f'{config_name}_checkpoint.keras')
-    logging.info(f'Checkpoint saved!')
+    model.save_weights(dir_checkpoint / f'{config_name}_checkpoint.weights.h5', overwrite=True)
+
+    logging.info(f'Model weights saved!')
 
 def get_args():
     parser = argparse.ArgumentParser(description='Train model on bloons round data.')

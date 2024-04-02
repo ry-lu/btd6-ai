@@ -1,16 +1,16 @@
 from keras.models import Model
-from tensorflow import keras
 from keras.layers import Input, Dense, Dropout, Concatenate, Flatten, Embedding
-from keras import activations
 import tensorflow as tf
+import keras
 
+@keras.saving.register_keras_serializable(package="DenseLayers")
 class DensePermutation(keras.layers.Layer):
   """ Layer that deals with permutation invariance using weight sharing.
   """
   def __init__(self, units, activation=None, name=None, **kwargs):
     super(DensePermutation, self).__init__(name=name, **kwargs)
     self.units = units
-    self.activation = tf.keras.activations.get(activation)
+    self.activation = keras.activations.get(activation)
 
   def build(self, input_shape):
     self.my_weight = self.add_weight(
@@ -36,7 +36,7 @@ class DensePermutation(keras.layers.Layer):
     })
     return config
   
-def create_model():
+def create_model(compile=True):
   """Creates 12-tower-input model that outputs
   probability of winning a round."""
   tower_layer = Dense(32, activation="relu")
@@ -57,5 +57,7 @@ def create_model():
   y = Dense(1, activation = "sigmoid", name = 'odds_output')(x)
 
   model = Model(inputs=total_inputs, outputs=y,name='round_predictor')
-  model.compile(optimizer='adam', metrics = ["binary_accuracy", tf.keras.metrics.Recall()], loss =tf.keras.losses.BinaryCrossentropy())
+
+  if compile:
+    model.compile(optimizer='adam', metrics = ["binary_accuracy", keras.metrics.Recall()], loss =keras.losses.BinaryCrossentropy())
   return model

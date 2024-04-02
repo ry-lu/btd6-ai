@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 from utils.tower_ranges import TOWER_NAMES
 
 
