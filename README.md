@@ -19,7 +19,6 @@ Logs CHIMPS: [video link](https://drive.google.com/file/d/1xZ18cwrkkEFdrp4685lbq
 
 Cubism CHIMPS: [video link](https://drive.google.com/file/d/1EYaZ9eAFWIfQvbG2r0IfPCyWt5GWOMsr/view?usp=sharing)
 
-For more info: [link](https://docs.google.com/document/d/1DWpxrY18FoTPl9ssHeJAfvOj747R3fHAzM5F-R7x3nQ/edit?usp=sharing)
 
 ## Setup
 Python 3.12.2
